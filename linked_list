@@ -1,0 +1,123 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node *head;     //구조체 주소를 위한 포인터 헤드
+struct node     //구조체 node 
+{
+    int data;      //구조체 멤버 data
+    struct node *link;   //다음주소를 가리키는 link 선언 (자기 참조)
+};
+
+
+struct node *insert(struct node *mat)   // 연결리스트 노드 추가 함수 (오름차순 정렬)
+{
+    int inputnum; // 값을 받기 위한 int형 변수 선언
+    struct node *le, *gr;  // 구조체 포인터 i선언 (less, greater의 줄임)
+
+    printf("삽입할 정수를 선택하세요 : ");
+    scanf("%d", &inputnum);   // 값을 입력받아 inputnum에 저장
+
+    le = (struct node*)malloc(sizeof(struct node)); // 구조체를 이용해 동적 메모리 할당
+    le->data = inputnum;    // i의 데이터에 받아온 값인 inputnum을 저장
+    le->link = NULL;    // i에 다음 리스트는 NULL 값을 줘서 끊어준다.
+    if (head == NULL)    // head에 값이 들어가 있지 않다면
+        head = le;   // 헤드에 i를 넣고
+    else {
+        if (inputnum < head->data) { // inputnum이 head의 data 값보다 작다면
+            le->link = head; // head의 값을 i의 다음에 저장
+            head = le; // head에는 i의 리스트를 저장해준다.
+            return le;
+        }
+        else { // inputnum이 head의 값보다 크다면
+            gr = head; // head의 값을 gr에 저장
+            while (gr != NULL && inputnum > gr->data) { // gr이 null 값이거나 inputnum이 gr의 data 값보다 커질 때까지 반복
+                mat = gr; // gr의 리스트를 mat에 대입
+                gr = gr->link; // gr의 다음 값은 gr에 저장
+            }
+        }
+        // 헤드가 0이 아니면 값이 있는 것이므로 i에 다음 리스트에 mat의 다음 리스트 저장
+        le->link = mat->link;    
+        mat->link = le;   // mat에 다음 리스트에 i 대입
+    }
+    return (le); 
+}
+
+
+struct node printlist()   // 연결리스트 출력 함수
+{
+    struct node *cp1, *cp2;   // 구조체 기억을 위한 포인터 선언
+    printf("%d  ", head->data);   // 헤드의 data 멤버 출력
+    cp1 = head;               // cp1에 헤드의 값 대입
+    while (cp1->link != NULL)  {   // 다음 값이 0이 아닐 때까지 반복!
+        cp2 = cp1->link;  // cp2은 다음 리스트 값을 저장
+        cp1 = cp2;        // cp는 헤드로 변환
+        printf("%d  ", cp1->data);  // cp1의 data 멤버를 반복 출력
+
+    }
+    printf("\n");
+}
+
+void listdelete()  // 연결리스트 삭제 함수
+{
+    struct node *f, *m, *r;  // 구조체 기억을 위한 포인터 선언
+    int i;
+
+    printf("삭제할 정수를 입력하세요. : "); 
+    scanf("%d", &i);   // i에 삭제할 리스트를 입력받는다.
+    printf("\n");
+    f = head;
+    m = head;   // f와 m은 헤드를 저장
+    m = m->link;    // 그 후, m에는 m의 다음 리스트를 저장
+    do { 
+        if (f->data == i) {   // data 멤버와 입력받은 i와 같다면  
+            m = f->link;     // f의 다음 리스트를 m에 저장
+            head = m;      // 그리고 m을 헤드에 저장
+            free(f);      // f는 리스트 삭제
+            break;  
+        }
+        else if (m->data == i)  {  // m(두번째 리스트)의 멤버 data가 i와 같다면 
+            r = m->link;     // r에 m의 다음 리스트 저장
+            f->link = m->link;  // 그 후, f의 다음 리스트에 m의 다음리스트를 저장
+            free(m);      // m 리스트 삭제
+            break;
+        }
+        f = f->link;     // f는 다음 리스트에 f로 이동 (둘다 아닐시)
+        m = m->link;     // m은 다음 리스트로 이동
+    } while (1);
+}
+
+int main(void) 
+{
+    int num;
+    struct node *mat;   //구조체를 가리키는 
+    head = NULL;
+    mat = NULL; // 헤드와 mat는 NULL로 초기화
+
+    printf("연결리스트 프로그램입니다.\n");
+    do {   
+        if (mat != NULL) { // 연결리스트에 값이 있다면 실행 X
+            printf("\n");
+            printlist(); // printlist함수 호출
+        }
+        printf("1. 삽입   2. 삭제    3. 종료 \n");
+        printf("메뉴를 선택하세요 : ");
+        scanf("%d", &num);  // 메뉴 선택
+
+        if (num == 1) {  //1 선택 시 값 추가 함수로
+            mat = insert(mat);
+            printf("\n");
+        }
+        else if (num == 2) {  // 2번 실행시
+            if (head == NULL) { // 헤드가 0값이면 없다는 것이므로 
+                printf("입력받은 리스트가 존재 하지 않습니다. \n\n");
+                printf("최소 하나의 값을 추가해주세요!\n");
+                mat = insert(mat);
+            }
+            else
+                listdelete();  // 값이 있다면 listdelete 함수 호출
+        }
+    } while (num != 3); // 3이 입력되면 반복문 종료!
+    printf("프로그램을 종료하였습니다\n\n");
+    return 0;
+}
