@@ -1,0 +1,67 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+	int **msquare;		// 동적 할당을 위한 포인터
+	int i, j, itmp, jtmp;
+	int n, size;		// 배열크기와 입력되는 숫자
+
+	while (1) { // 홀수를 입력받을 때까지 반복
+		printf("n x n 행렬의 n을 입력하시오 : ");
+		scanf("%d", &size);
+		if ((size % 2) == 0) { // size가 짝수라면 계속 반복 질문
+			printf("※입력하신 정수는 홀수가 아닙니다.\n\n");
+			continue;
+		}
+		break;
+	}
+
+	msquare = (int**)malloc(size * sizeof(int)); // 2차원 배열 동적 할당
+	for (i = 0; i < size; i++) // 입력받은 size 만큼
+		msquare[i] = (int*)calloc(size, sizeof(int)); // calloc을 사용하여 할당
+
+	// 시작할 부분 정의
+	i = 0;
+	j = size / 2;
+	msquare[i][j] = 1; // 초기 값 1을 시작지점에 대입!
+ 
+	printf("\n"); 
+
+	// 마방진 행렬 대입 부분
+	for (n = 2; n <= (size * size); n++) { // 마방진의 크기만큼 반복 7이면 49
+		itmp = i;
+		jtmp = j;
+		i--; 
+		j++;
+
+		if (i < 0) { // i 가 0 보다 작아질 경우
+			i = size - 1; //size의 -1을 하여 마지막 줄로 (행)
+		}
+
+		if (j > size - 1) { // j가 size의 -1보다 커질 경우
+			j = 0; // 0을 넣어 첫 줄로 (열)
+		}
+
+		if (msquare[i][j] != 0){ // 값이 이미 있다면 한 칸 아래로 진행!
+			// 예를 들면 7의 대각선 오른쪽 위는 1인데 값이 있으니 아래로 가서 8 저장
+			i = itmp + 1; // 행만 바꾸고  
+			j = jtmp; // 열은 그대로
+		}
+		msquare[i][j] = n; // 배열에 n 값 대입
+	}
+	
+	for (i = 0; i < size; i++)   {  // 완성된 마방진 출력
+	       for (j = 0; j < size; j++) {
+	        printf("%4d ", msquare[i][j]);
+		   }     
+		   printf("\n");
+	}
+
+	for (i = 0; i < size; i++) // 동적 할당된 메모리 해제
+		free(msquare[i]);
+	free(msquare);
+
+	return 0;
+}
