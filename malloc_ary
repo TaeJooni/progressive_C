@@ -1,0 +1,62 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#define  mSize 5 // 총 5개의 문자열을 받음.
+
+char *insert() // 문자열 추가 함수
+{
+	int size = 10, n = 0;
+	char* str = malloc(size); // str에 기본 크기 10을 동적 할당
+	for (;; ++n)
+	{
+		if (size == n) { // n++하다가 size와 n이 같아진다면
+			size += 5; // size 값에 +5 한 만큼 size에 더해서 저장
+			str = (char*)realloc(str, sizeof(char) * size); // str을 그 size만큼 재할당
+		}
+
+		str[n] = getchar(); // 문자를 입력받아 str[n]에 저장 받음.
+		if (str[n] == '\n') // n번째 입력된 문자가 '\n' 이라면 반복문 종료
+			break;
+	}
+
+	str[n] = 0; // 마지막이라는 것을 알려주기 위해 0 저장
+	return str;
+}
+
+void print(char **ary, int size) { // 문자열 정렬 및 프린트 함수
+	int i, j;
+	char *store; // 값을 잠시 받아줄 변수 생성
+	char head[5][5] = { "1st", "2nd", "3rd", "4th", "5th" };
+
+	for (i = 0; i < 4; i++) {
+		for (j = i + 1; j < 5; j++) { // 첫번째 문자열을 2~5번째 문자열까지 한번씩 모두 비교
+			if (strlen(ary[i]) < strlen(ary[j])) { // 앞의 문자열보다 길다면 값 교환
+				store = ary[i];
+				ary[i] = ary[j];
+				ary[j]= store;
+			}
+		}
+	}
+
+	printf("\n-------------정렬된 문자열-------------\n");
+	for (i = 0; i < size; i++) { // size == mSize == 5
+		printf("%s : %s \n", head[i], ary[i]); // 헤드라인과 입력 받은 문자열 순서에 맞춰 출력
+	}
+	printf("\n");
+	return 0;
+}
+
+int main(void) { 
+	int i;
+	char **ary;
+	ary = (char**)malloc(sizeof(char*) * mSize); // 기본 사이즈 5를 이용해 동적 할당
+
+	for (i = 0; i < mSize; i++) { // 총 5번의 문자열 입력을 받음.
+		printf("문자열 %d : ", i + 1);
+		ary[i] = insert(); // insert 함수의 결과를 ary[i]에 저장
+	}
+
+	print(ary, mSize); // ary 주소와 5개의 사이즈 전달
+	free(ary); // 동적 할당 해제
+	return 0;
+}
